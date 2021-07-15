@@ -1,0 +1,85 @@
+---
+title: "Combining Grobs"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Combining Grobs}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(ingrid)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Ensure that images are rendered using a device which understands patterns
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
+```
+
+
+# combining grobs
+
+* `grob_stack()`
+    * simple combination of multiple grobs
+* `grob_intersect()`
+    * keep only where two grobs overlap
+* `grob_minus()`
+    * subtract a grob from anotehr
+* `grob_xor()`
+    * keep only parts of grabs which do not overlap
+* `grob_invert()`
+    * make a new grob out of the negative space around a grob
+
+
+
+
+
+```{r}
+library(grid)
+library(ingrid)
+register_verbose_printing()
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create 4 circles
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+c1 <- circle_grob(r = 20, fill = 'red', alpha = 0.3)
+grid.newpage(); grid.draw(c1);
+
+c2 <- circle_grob(r = 33, x = 25, fill = 'blue', alpha = 0.3)
+grid.newpage(); grid.draw(c2);
+
+c3 <- circle_grob(r = 28, x = -19, y = -20, fill = 'lightblue', col = 'transparent', alpha = 0.3)
+grid.newpage(); grid.draw(c3);
+
+c4 <- circle_grob(r = 2, x = -13, y= 4, fill='black', col='white')
+grid.newpage(); grid.draw(c4);
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Stack some of the circles
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+i1 <- grob_stack(c1, c2, c4)
+grid.newpage(); grid.draw(i1);
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Visualise how the 4th circle overlaps
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+grid.newpage();
+grid.draw(i1)
+grid.draw(c3)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Keep just the intersection of the stack of 3 circls and the 4th circle
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+wug <- ingrid::grob_intersect(i1, c3)
+
+grid.newpage(); grid.draw(wug);
+```
+

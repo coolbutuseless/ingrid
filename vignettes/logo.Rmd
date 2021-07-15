@@ -1,0 +1,112 @@
+---
+title: "Creating the Hex Logo"
+output: html_document
+vignette: >
+  %\VignetteIndexEntry{Creating the Hex Logo}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 10,
+  fig.height = 10
+)
+```
+
+```{r setup}
+library(ingrid)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Ensure that images are rendered using a device which understands patterns
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
+```
+
+
+
+
+# Creating the hex logo for `ingrid`
+
+
+```{r}
+library(grid)
+library(ingrid)
+```
+
+
+## Create a hexagon
+
+```{r}
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Parameters for a hex
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+r     <- 100
+theta <- seq(30, 360, 60) * pi/180 
+x     <- r * cos(theta)
+y     <- r * sin(theta)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# a hex polygon
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hex <- polygon_grob(x, y, fill = 'black')
+
+grid.newpage()
+grid.draw(hex)
+```
+
+## Load an image
+
+```{r}
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create an image maskeed by the hex
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+jpg <- jpeg::readJPEG("./img/ingrid.jpg")
+image <- raster_grob(
+  image  = jpg, 
+  x      = .mm(-5),
+  y      = .mm(-25),
+  width  = .mm(2 * 1.0 * r), 
+  height = .mm(3 * 1.0 * r)
+)
+
+grid.newpage()
+grid.draw(image)
+```
+
+## Mask the image with the hexagon
+
+```{r}
+image$vp <- vp_setmask(image$vp, hex)
+
+grid.newpage()
+grid.draw(image)
+```
+
+
+## Add some text
+
+```{r dev.args = list(png = list(type = "cairo"))}
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Position text
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+text <- text_grob(
+  label      = 'ingrid',
+  x          =  0.25 * r,
+  y          = -0.75 * r, 
+  rot        = 30,
+  just       = 0,
+  col        = 'white', 
+  fontfamily = 'courier',
+  cex        = 4
+)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Draw the objects
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+grid::grid.newpage()
+grid::grid.draw(image)
+grid::grid.draw(text)
+```

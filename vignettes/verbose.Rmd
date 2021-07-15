@@ -1,0 +1,76 @@
+---
+title: "Verbose Grob Output"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Verbose Grob Output}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(grid)
+library(ingrid)
+```
+
+
+# `{grid}` is not very verbose
+
+The `grid::print.grob()` method is quite terse, and only prints the type
+of grob and its name.
+
+```{r}
+cg <- circleGrob(x = 0.5, y = 0.5, r = unit(10, 'mm'), default.units = 'npc')
+cg
+```
+
+
+# `{ingrid}` offers verbose grob output
+
+A user can request that the grob print methods from print are replaced with 
+ones from `ingrid`.
+
+By calling `ingrid::register_verbose_printing()` then new verbose methods 
+are used for the following:
+
+* `print.grob()`
+* `print.polyclipgrob()`
+* `print.gtree()`
+    * Will verbosely print the nested grobs within a tree
+* `print.gpar()`
+* `print.viewport()`
+
+```{r}
+ingrid::register_verbose_printing()
+cg
+```
+
+
+Call `deregister_verbose_printing()` if this verbosity is no longer required.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

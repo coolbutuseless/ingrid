@@ -1,0 +1,79 @@
+---
+title: "Creating grobs"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Creating grobs}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(grid)
+library(ingrid)
+```
+
+
+# Creating a circle grob with `{grid}`
+
+
+```{r}
+gp <- gpar(
+  fill = 'red', 
+  col  = 'green', 
+  lwd  = 12
+)
+
+cg <- circleGrob(
+  x  = unit(0.4, 'npc'),  
+  y  = unit(0.3, 'npc'), 
+  r  = unit(5, 'mm'), 
+  gp = gp
+)
+
+cg
+grid.newpage()
+grid.draw(cg)
+```
+
+
+
+
+# Creating a circle grob with `{ingrid}`
+
+grob creation in `{ingrid}` offers:
+
+* unit shortcuts e.g. `.npc()` is equivalent to `unit(x, 'npg')`
+* graphical parameters may be specified inline with the arguments for the grob 
+  itself, rather than being a separate `gpar()` call
+* Be default, all grob coordinates are offset from the centre of the canvas
+
+```{r}
+cg <- ingrid::circle_grob(
+  x    = .npc(0.4), 
+  y    = .npc(0.3), 
+  r    = 5, 
+  fill = 'red', 
+  col  = 'blue', 
+  lwd  = 12,
+  centred = FALSE
+)
+
+ingrid::register_verbose_printing()
+cg
+grid.newpage()
+grid.draw(cg)
+```
+
+
+# See also
+
+`rect_grob()`, `polygon_grob()`, `lines_grob()` etc
+
+
