@@ -42,3 +42,29 @@ gp <- function(col, fill, alpha, lty, lwd, lex, lineend, linejoin, linemitre,
   args <- find_args()
   do.call(grid::gpar, args)
 }
+
+
+
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#' Update the values in a gpar object
+#'
+#' @param gpar_obj gpar object
+#' @inheritParams gp
+#'
+#' @export
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+gp_update <- function(gpar_obj, col, fill, alpha, lty, lwd, lex, lineend, linejoin, linemitre,
+                      fontsize, cex, fontfamily, fontface, lineheight) {
+
+  args    <- find_args()
+  args$gpar_obj <- NULL
+  for (name in names(args)) {
+    gpar_obj[[name]] <- args[[name]]
+  }
+
+  gpar_obj
+}
+

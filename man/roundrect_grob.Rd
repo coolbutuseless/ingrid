@@ -10,8 +10,6 @@ roundrect_grob(
   width = 20,
   height = 20,
   just = c("left", "bottom"),
-  hjust = NULL,
-  vjust = NULL,
   default.units = getOption("ingrid.default.units", "mm"),
   name = NULL,
   gp = NULL,
@@ -53,12 +51,6 @@ justification and the second value specifies vertical justification.
 Possible string values are: "left", "right", "centre",
 "center", "bottom", and "top". For numeric values, 0 means left
 alignment and 1 means right alignment.}
-
-\item{hjust}{A numeric vector specifying horizontal justification.
-If specified, overrides the just setting.}
-
-\item{vjust}{A numeric vector specifying vertical justification.
-If specified, overrides the just setting.}
 
 \item{default.units}{\code{getOption("ingrid.default.units", 'mm')}}
 

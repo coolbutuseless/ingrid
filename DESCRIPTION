@@ -1,7 +1,7 @@
 Package: ingrid
 Type: Package
 Title: INteractive GRID Tools
-Version: 0.1.0
+Version: 0.1.1
 Author: mikefc
 Maintainer: mikefc <mikefc@coolbutuseless.com>
 Description: Tools for working with grid objects interactively.
@@ -17,5 +17,6 @@ Imports:
 Suggests: 
     rmarkdown,
     knitr,
-    jpeg
+    jpeg,
+    ggplot2
 VignetteBuilder: knitr

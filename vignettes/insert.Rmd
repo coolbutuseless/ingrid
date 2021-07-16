@@ -1,0 +1,118 @@
+---
+title: "Graph inset"
+output: html_document
+vignette: >
+  %\VignetteIndexEntry{Graph inset}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Ensure that images are rendered using a device which understands patterns
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
+```
+
+```{r setup}
+library(grid)
+library(ggplot2)
+library(ingrid)
+```
+
+
+# Creating a zoomed inset in a ggplot
+
+1. Turn the ggplot object into a grob gtable object
+2. Render this original plot
+3. Copy the original plot and scale it and move it up and to the right
+4. Mask the view so we're only seeing part of this zoomed plot
+5. Add some borders for the regions.
+
+
+Issues:
+
+* the site and zoomed extents are a bit different.
+
+
+
+```{r fig.width=6, fig.height=6}
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Basic plot
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+p <- ggplot(mtcars) + 
+  geom_point(aes(mpg, wt)) + 
+  theme_bw()
+
+p
+```
+
+
+```{r fig.width=6, fig.height=6}
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Convert plot to a gtable (collection of grobs),
+# and create a copy of it
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+orig <- ggplot2::ggplot_gtable(ggplot2::ggplot_build(p))
+zoom <- ingrid::grob_copy(orig)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# zoom location
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+site <- roundrect_grob(
+  x      = .npc(0.2), 
+  y      = .npc(0.5), 
+  width  = .npc(0.20), 
+  height = .npc(0.15),
+  centred = FALSE
+)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Adjust the viewport to:
+#   * Scale up the zoomed version
+#   * mask it with the rounded rectangle
+#   * move into the upper right of the plot
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+zoom$vp <- viewport(
+  x      = .npc(1.16),
+  y      = .npc(0.6),
+  width  = .npc(2),
+  height = .npc(2),
+  mask   = site
+)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# copy the site and make it into a visible object with a border
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+site_border <- ingrid::grob_copy(site)
+site_border$gp <- ingrid::gp_update(site_border$gp, lty = 2, col = 'blue', fill = 'transparent')
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create another border for the zoom view
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+zoom_border <- roundrect_grob(
+  x      = .npc(0.58), 
+  y      = .npc(0.6), 
+  width  = .npc(0.20) * 2, 
+  height = .npc(0.15) * 2,
+  fill   = 'transparent',
+  col    = 'red',
+  lty    = 2,
+  centred = FALSE
+)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Draw everything
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+grid.newpage()
+grid.draw(orig)
+grid.draw(zoom)
+grid.draw(site_border)
+grid.draw(zoom_border)
+```
+
