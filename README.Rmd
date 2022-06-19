@@ -132,7 +132,7 @@ layout functions, somewhat similar to how `{shiny}` does it's UI layout.
 * `igl_col()` will arrange its sub-elements in a vertical column.
 * `igl_vp()` will create an arbitrary viewport containing its sub-elements.
 
-```{r fig.width = 3, fig.height = 3, out.width = 200, out.height = 200}
+```{r definecheck, fig.width = 3, fig.height = 3, out.width = 200, out.height = 200}
 check <- igl_row(
   igl_col(
     ig_rect(fill = 'black'),
@@ -151,7 +151,7 @@ grid.newpage(); grid.draw(check45)
 ```
 
 
-```{r}
+```{r patternfill}
 demo <- igl_row(
   ig_rect  (fill = ig_pattern(check  , width = .cm(1.5), height = .cm(1.5))),
   ig_circle(fill = ig_pattern(check  , width = .cm(2.5), height = .cm(2.5))),
@@ -176,7 +176,7 @@ Grobs may be combined with `igc_*()` functions.
   functionality introduced in R4.1
 
 
-```{r}
+```{r combination}
 library(grid)
 library(ingrid)
 
@@ -198,7 +198,7 @@ grid.newpage(); grid.draw(wug)
   functionality introduced in R4.1
 
 
-```{r fig.width = 3, fig.height = 3, out.width = 200, out.height = 200}
+```{r masking, fig.width = 3, fig.height = 3, out.width = 200, out.height = 200}
 library(grid)
 library(ingrid)
 
@@ -227,7 +227,7 @@ grid.newpage(); grid.draw(masked)
 
 ## Transform grobs by translation/rotation
 
-```{r fig.width = 8, fig.height = 3, out.width = 800, out.height = 300}
+```{r transform1, fig.width = 8, fig.height = 3, out.width = 800, out.height = 300}
 # Template object that will be adapted
 rect <- ig_rect(width = .cm(2), height = .cm(2), col = 'grey20')
 
@@ -252,7 +252,7 @@ grid.newpage(); grid.draw(grobs)
 
 
 
-```{r fig.height = 6}
+```{r transform2, fig.height = 6}
 # Template object that will be adapted
 rect <- ig_rect(width = .cm(1), height = .cm(1), col = 'white')
 

@@ -137,14 +137,14 @@ check <- igl_row(
 grid.newpage(); grid.draw(check)
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="200" height="200" />
+<img src="man/figures/README-definecheck-1.png" width="200" height="200" />
 
 ``` r
 check45 <- igl_vp(check, angle = 45)
 grid.newpage(); grid.draw(check45)
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-2.png" width="200" height="200" />
+<img src="man/figures/README-definecheck-2.png" width="200" height="200" />
 
 ``` r
 demo <- igl_row(
@@ -156,7 +156,7 @@ demo <- igl_row(
 grid::grid.newpage(); grid::grid.draw(demo)
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-patternfill-1.png" width="100%" />
 
 # Combining grobs
 
@@ -185,7 +185,7 @@ wug <- igc_intersect(
 grid.newpage(); grid.draw(wug)
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-combination-1.png" width="100%" />
 
 # Masking
 
@@ -214,7 +214,7 @@ grid.draw(ras)
 grid.draw(hex)
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="200" height="200" />
+<img src="man/figures/README-masking-1.png" width="200" height="200" />
 
 ``` r
 # Mask the raster with the hex
@@ -222,7 +222,7 @@ masked <- igc_mask(ras, hex)
 grid.newpage(); grid.draw(masked)
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-2.png" width="200" height="200" />
+<img src="man/figures/README-masking-2.png" width="200" height="200" />
 
 ## Transform grobs by translation/rotation
 
@@ -249,7 +249,7 @@ grobs <- do.call(grid::grobTree, grobs)
 grid.newpage(); grid.draw(grobs)
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="800" height="300" />
+<img src="man/figures/README-transform1-1.png" width="800" height="300" />
 
 ``` r
 # Template object that will be adapted
@@ -282,7 +282,7 @@ grobs <- do.call(grid::grobTree, grobs)
 grid.newpage(); grid.draw(grobs)
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+<img src="man/figures/README-transform2-1.png" width="100%" />
 
 # Future
 
