@@ -59,17 +59,16 @@ p
 # and create a copy of it
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 orig <- ggplot2::ggplot_gtable(ggplot2::ggplot_build(p))
-zoom <- ingrid::grob_copy(orig)
+zoom <- ingrid::ig_copy(orig)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # zoom location
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-site <- roundrect_grob(
+site <- ig_roundrect(
   x      = .npc(0.2), 
   y      = .npc(0.5), 
   width  = .npc(0.20), 
-  height = .npc(0.15),
-  centred = FALSE
+  height = .npc(0.15)
 )
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -89,21 +88,20 @@ zoom$vp <- viewport(
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # copy the site and make it into a visible object with a border
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-site_border <- ingrid::grob_copy(site)
-site_border$gp <- ingrid::gp_update(site_border$gp, lty = 2, col = 'blue', fill = 'transparent')
+site_border <- ig_copy(site)
+site_border$gp <- gp_update(site_border$gp, lty = 2, col = 'blue', fill = 'transparent')
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create another border for the zoom view
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-zoom_border <- roundrect_grob(
+zoom_border <- ig_roundrect(
   x      = .npc(0.58), 
   y      = .npc(0.6), 
   width  = .npc(0.20) * 2, 
   height = .npc(0.15) * 2,
   fill   = 'transparent',
   col    = 'red',
-  lty    = 2,
-  centred = FALSE
+  lty    = 2
 )
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

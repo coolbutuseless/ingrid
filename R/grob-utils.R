@@ -92,7 +92,7 @@ grob_auto_name <- init_grob_auto_name()
 #'
 #' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-grob_copy <- function(grob) {
+ig_copy <- function(grob) {
   grob_auto_name(grob)
 }
 

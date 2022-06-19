@@ -41,7 +41,7 @@ if (FALSE) {
 #' Create a rect grob
 #'
 #'
-#' \code{bbox_grob} is a simple variant where the (x, y) coords default to
+#' \code{ig_bbox} is a simple variant where the (x, y) coords default to
 #' defining the bottom left corner.  This can be easier to reason about in
 #' some cases.
 #'
@@ -60,18 +60,16 @@ if (FALSE) {
 
 
 #'
-#' @param default.units \code{getOption("ingrid.default.units", 'mm')}
+#' @param default.units \code{getOption("ingrid.default.units", 'npc')}
 #' @param name grob name. default: NULL
 #' @param gp graphical parameter object created by \code{grid::gpar()} or
 #'        \code{ingrid::gp()}.  If NULL (default), then a \code{gpar} object
 #'        is created from the relevant arguments to this function i.e. \code{fill},
 #'        \code{col}, etc
-#' @param vp viewport object created by \code{grid::viewport()} or
-#'        \code{ingrid::vp()}.  If NULL (default), then a \code{viewport} object
+#' @param vp viewport object created by \code{grid::viewport()}.
+#'        If NULL (default), then a \code{viewport} object
 #'        is created from a limited subset of arguments to this function i.e. \code{mask},
 #'        \code{clip}, etc
-#' @param centred default: TRUE to shift given x,y coordinates by
-#'        c(0.5npc, 0.5npc)
 #' @param col,fill,alpha,lty,lwd,lex,lineend,linejoin,linemitre,fontsize,cex,fontfamily,fontface,lineheight
 #'        See documentation for \code{gp()}
 #' @param mask,clip,layout,layout.pos.row,layout.pos.col See documentation for
@@ -79,24 +77,25 @@ if (FALSE) {
 #'
 #' @examples
 #' \dontrun{
-#' bbox_grob(width = 40, fill = 'red')
+#' ig_bbox(width = 40, fill = 'red')
 #' }
 #'
 #' @export
+#'
+#' @family grobs
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bbox_grob <- function(
+ig_bbox <- function(
   x      =  0,
   y      =  0,
-  width  = 20,
-  height = 20,
+  width  = 1,
+  height = 1,
   just   = c('left', 'bottom'),
   hjust  = NULL,
   vjust  = NULL,
-  default.units = getOption("ingrid.default.units", 'mm'),
+  default.units = getOption("ingrid.default.units", 'npc'),
   name    = NULL,
   gp      = NULL,
   vp      = NULL,
-  centred = TRUE,
   col, fill, alpha, lty, lwd, lex, lineend, linejoin, linemitre, fontsize, cex, fontfamily, fontface, lineheight,
   mask,clip,layout,layout.pos.row,layout.pos.col
 ) {
@@ -113,14 +112,14 @@ bbox_grob <- function(
     vp_arg_names <- c('mask', 'clip', 'layout', 'layout.pos.row', 'layout.pos.col')
     vp_arg_names <- intersect(vp_arg_names, names(args))
     vp_args <- args[vp_arg_names]
-    vp <- do.call(ingrid::vp, vp_args)
+    vp <- do.call(vpc, vp_args)
   }
 
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # create the grob
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  rect_grob(
+  ig_rect(
     x             = x,
     y             = y,
     width         = width,
@@ -131,8 +130,7 @@ bbox_grob <- function(
     default.units = default.units,
     name          = name,
     gp            = gp,
-    vp            = vp,
-    centred       = centred
+    vp            = vp
   )
 }
 
@@ -164,20 +162,21 @@ bbox_grob <- function(
 #' @param arrow A list describing arrow heads to place at either end of
 #'        the bezier, as produced by the arrow function.
 #'
-#' @inheritParams bbox_grob
+#' @inheritParams ig_bbox
 #' @export
+#'
+#' @family grobs
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bezier_grob <- function(
-  x             = c(0, 0.5, 1, 0.5) * 20,
-  y             = c(0.5, 1, 0.5, 0) * 20,
+ig_bezier <- function(
+  x             = c(0, 0.5, 1, 0.5),
+  y             = c(0.5, 1, 0.5, 0),
   id            = NULL,
   id.lengths    = NULL,
-  default.units = getOption("ingrid.default.units", 'mm'),
+  default.units = getOption("ingrid.default.units", 'npc'),
   arrow         = NULL,
   name          = NULL,
   gp            = NULL,
   vp            = NULL,
-  centred       = TRUE,
   col, fill, alpha, lty, lwd, lex, lineend, linejoin, linemitre, fontsize, cex, fontfamily, fontface, lineheight,
   mask,clip,layout,layout.pos.row,layout.pos.col
 ) {
@@ -194,7 +193,7 @@ bezier_grob <- function(
     vp_arg_names <- c('mask', 'clip', 'layout', 'layout.pos.row', 'layout.pos.col')
     vp_arg_names <- intersect(vp_arg_names, names(args))
     vp_args <- args[vp_arg_names]
-    vp <- do.call(ingrid::vp, vp_args)
+    vp <- do.call(vpc, vp_args)
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -202,11 +201,6 @@ bezier_grob <- function(
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   x <- make_unit(x, default.units)
   y <- make_unit(y, default.units)
-
-  if (isTRUE(centred)) {
-    x <- x + unit(0.5, 'npc')
-    y <- y + unit(0.5, 'npc')
-  }
 
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -244,20 +238,21 @@ bezier_grob <- function(
 #'
 #' @param x,y coordinates of centre. default: c(0, 0)
 #' @param r radius
-#' @inheritParams bbox_grob
+#' @inheritParams ig_bbox
 #'
 #' @import grid
 #' @export
+#'
+#' @family grobs
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-circle_grob <- function(
-  r             = 10,
-  x             =  0,
-  y             =  0,
-  default.units = getOption("ingrid.default.units", 'mm'),
+ig_circle <- function(
+  r             =  0.5,
+  x             =  0.5,
+  y             =  0.5,
+  default.units = getOption("ingrid.default.units", 'npc'),
   name          = NULL,
   gp            = NULL,
   vp            = NULL,
-  centred       = TRUE,
   col, fill, alpha, lty, lwd, lex, lineend, linejoin, linemitre, fontsize, cex, fontfamily, fontface, lineheight,
   mask,clip,layout,layout.pos.row,layout.pos.col
 ) {
@@ -274,7 +269,7 @@ circle_grob <- function(
     vp_arg_names <- c('mask', 'clip', 'layout', 'layout.pos.row', 'layout.pos.col')
     vp_arg_names <- intersect(vp_arg_names, names(args))
     vp_args <- args[vp_arg_names]
-    vp <- do.call(ingrid::vp, vp_args)
+    vp <- do.call(vpc, vp_args)
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -283,12 +278,6 @@ circle_grob <- function(
   x <- make_unit(x, default.units)
   y <- make_unit(y, default.units)
   r <- make_unit(r, default.units)
-
-  if (isTRUE(centred)) {
-    x <- x + unit(0.5, 'npc')
-    y <- y + unit(0.5, 'npc')
-  }
-
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Create the grob
@@ -321,19 +310,20 @@ circle_grob <- function(
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #' Create a grob
 #'
-#' @inheritParams bbox_grob
-#' @inheritParams bezier_grob
+#' @inheritParams ig_bbox
+#' @inheritParams ig_bezier
 #' @export
+#'
+#' @family grobs
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-lines_grob <- function(
-  x      = c(0, 20),
-  y      = c(0, 20),
-  default.units = getOption("ingrid.default.units", 'mm'),
+ig_lines <- function(
+  x      = c(0, 1),
+  y      = c(0, 1),
+  default.units = getOption("ingrid.default.units", 'npc'),
   arrow   = NULL,
   name    = NULL,
   gp      = NULL,
   vp      = NULL,
-  centred = TRUE,
   col, fill, alpha, lty, lwd, lex, lineend, linejoin, linemitre, fontsize, cex, fontfamily, fontface, lineheight,
   mask,clip,layout,layout.pos.row,layout.pos.col
 ) {
@@ -350,7 +340,7 @@ lines_grob <- function(
     vp_arg_names <- c('mask', 'clip', 'layout', 'layout.pos.row', 'layout.pos.col')
     vp_arg_names <- intersect(vp_arg_names, names(args))
     vp_args <- args[vp_arg_names]
-    vp <- do.call(ingrid::vp, vp_args)
+    vp <- do.call(vpc, vp_args)
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -358,12 +348,6 @@ lines_grob <- function(
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   x <- make_unit(x, default.units)
   y <- make_unit(y, default.units)
-
-  if (isTRUE(centred)) {
-    x <- x + unit(0.5, 'npc')
-    y <- y + unit(0.5, 'npc')
-  }
-
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Create the grob
@@ -395,17 +379,18 @@ lines_grob <- function(
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #' Create a grob
 #'
-#' @inheritParams bbox_grob
+#' @inheritParams ig_bbox
 #' @export
+#'
+#' @family grobs
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-null_grob <- function(
+ig_null <- function(
   x      =  0,
   y      =  0,
-  default.units = getOption("ingrid.default.units", 'mm'),
+  default.units = getOption("ingrid.default.units", 'npc'),
   name    = NULL,
   gp      = NULL,
   vp      = NULL,
-  centred = TRUE,
   col, fill, alpha, lty, lwd, lex, lineend, linejoin, linemitre, fontsize, cex, fontfamily, fontface, lineheight,
   mask,clip,layout,layout.pos.row,layout.pos.col
 ) {
@@ -422,7 +407,7 @@ null_grob <- function(
     vp_arg_names <- c('mask', 'clip', 'layout', 'layout.pos.row', 'layout.pos.col')
     vp_arg_names <- intersect(vp_arg_names, names(args))
     vp_args <- args[vp_arg_names]
-    vp <- do.call(ingrid::vp, vp_args)
+    vp <- do.call(vpc, vp_args)
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -430,12 +415,6 @@ null_grob <- function(
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   x <- make_unit(x, default.units)
   y <- make_unit(y, default.units)
-
-  if (isTRUE(centred)) {
-    x <- x + unit(0.5, 'npc')
-    y <- y + unit(0.5, 'npc')
-  }
-
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Create the grob
@@ -480,22 +459,23 @@ null_grob <- function(
 #' @param rule A character value specifying the fill rule: either
 #'        "winding" or "evenodd".
 #'
-#' @inheritParams bbox_grob
+#' @inheritParams ig_bbox
 #' @export
+#'
+#' @family grobs
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-path_grob <- function(
-  x              = c(0, 1, 1) * 20,
-  y              = c(0, 0, 1) * 20,
+ig_path <- function(
+  x              = c(0, 1, 1),
+  y              = c(0, 0, 1),
   id             = NULL,
   id.lengths     = NULL,
   pathId         = NULL,
   pathId.lengths = NULL,
   rule           = c('winding', 'evenodd'),
-  default.units  = getOption("ingrid.default.units", 'mm'),
+  default.units  = getOption("ingrid.default.units", 'npc'),
   name           = NULL,
   gp             = NULL,
   vp             = NULL,
-  centred        = TRUE,
   col, fill, alpha, lty, lwd, lex, lineend, linejoin, linemitre, fontsize, cex, fontfamily, fontface, lineheight,
   mask,clip,layout,layout.pos.row,layout.pos.col
 ) {
@@ -512,7 +492,7 @@ path_grob <- function(
     vp_arg_names <- c('mask', 'clip', 'layout', 'layout.pos.row', 'layout.pos.col')
     vp_arg_names <- intersect(vp_arg_names, names(args))
     vp_args <- args[vp_arg_names]
-    vp <- do.call(ingrid::vp, vp_args)
+    vp <- do.call(vpc, vp_args)
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -520,12 +500,6 @@ path_grob <- function(
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   x <- make_unit(x, default.units)
   y <- make_unit(y, default.units)
-
-  if (isTRUE(centred)) {
-    x <- x + unit(0.5, 'npc')
-    y <- y + unit(0.5, 'npc')
-  }
-
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Create the grob
@@ -566,19 +540,20 @@ path_grob <- function(
 #'        and note fill below.
 #' @param size unit object specifying the size of the plotting symbols.
 #'
-#' @inheritParams bbox_grob
+#' @inheritParams ig_bbox
 #' @export
+#'
+#' @family grobs
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-points_grob <- function(
-  x      = c(0, 1, 1) * 20,
-  y      = c(0, 0, 1) * 20,
+ig_points <- function(
+  x      = 0.5,
+  y      = 0.5,
   pch    = 1,
   size   = 4,
-  default.units = getOption("ingrid.default.units", 'mm'),
+  default.units = getOption("ingrid.default.units", 'npc'),
   name    = NULL,
   gp      = NULL,
   vp      = NULL,
-  centred = TRUE,
   col, fill, alpha, lty, lwd, lex, lineend, linejoin, linemitre, fontsize, cex, fontfamily, fontface, lineheight,
   mask,clip,layout,layout.pos.row,layout.pos.col
 ) {
@@ -595,7 +570,7 @@ points_grob <- function(
     vp_arg_names <- c('mask', 'clip', 'layout', 'layout.pos.row', 'layout.pos.col')
     vp_arg_names <- intersect(vp_arg_names, names(args))
     vp_args <- args[vp_arg_names]
-    vp <- do.call(ingrid::vp, vp_args)
+    vp <- do.call(vpc, vp_args)
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -604,12 +579,6 @@ points_grob <- function(
   x    <- make_unit(x   , default.units)
   y    <- make_unit(y   , default.units)
   size <- make_unit(size, default.units)
-
-  if (isTRUE(centred)) {
-    x <- x + unit(0.5, 'npc')
-    y <- y + unit(0.5, 'npc')
-  }
-
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Create the grob
@@ -642,20 +611,21 @@ points_grob <- function(
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #' Create a grob
 #'
-#' @inheritParams bbox_grob
-#' @inheritParams path_grob
+#' @inheritParams ig_bbox
+#' @inheritParams ig_path
 #' @export
+#'
+#' @family grobs
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-polygon_grob <- function(
-  x             =  0,
-  y             =  0,
+ig_polygon <- function(
+  x             = c(0, 0.5, 1, 0.5),
+  y             = c(0.5, 1, 0.5, 0),
   id            = NULL,
   id.lengths    = NULL,
-  default.units = getOption("ingrid.default.units", 'mm'),
+  default.units = getOption("ingrid.default.units", 'npc'),
   name          = NULL,
   gp            = NULL,
   vp            = NULL,
-  centred       = TRUE,
   col, fill, alpha, lty, lwd, lex, lineend, linejoin, linemitre, fontsize, cex, fontfamily, fontface, lineheight,
   mask,clip,layout,layout.pos.row,layout.pos.col
 ) {
@@ -672,7 +642,7 @@ polygon_grob <- function(
     vp_arg_names <- c('mask', 'clip', 'layout', 'layout.pos.row', 'layout.pos.col')
     vp_arg_names <- intersect(vp_arg_names, names(args))
     vp_args <- args[vp_arg_names]
-    vp <- do.call(ingrid::vp, vp_args)
+    vp <- do.call(vpc, vp_args)
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -680,12 +650,6 @@ polygon_grob <- function(
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   x <- make_unit(x, default.units)
   y <- make_unit(y, default.units)
-
-  if (isTRUE(centred)) {
-    x <- x + unit(0.5, 'npc')
-    y <- y + unit(0.5, 'npc')
-  }
-
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Create the grob
@@ -718,23 +682,24 @@ polygon_grob <- function(
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #' Create a grob
 #'
-#' @inheritParams bbox_grob
-#' @inheritParams path_grob
-#' @inheritParams bezier_grob
+#' @inheritParams ig_bbox
+#' @inheritParams ig_path
+#' @inheritParams ig_bezier
 #'
 #' @export
+#'
+#' @family grobs
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-polyline_grob <- function(
-  x             =  0,
-  y             =  0,
+ig_polyline <- function(
+  x             = c(0, 1),
+  y             = c(0, 1),
   id            = NULL,
   id.lengths    = NULL,
-  default.units = getOption("ingrid.default.units", 'mm'),
+  default.units = getOption("ingrid.default.units", 'npc'),
   arrow         = NULL,
   name          = NULL,
   gp            = NULL,
   vp            = NULL,
-  centred       = TRUE,
   col, fill, alpha, lty, lwd, lex, lineend, linejoin, linemitre, fontsize, cex, fontfamily, fontface, lineheight,
   mask,clip,layout,layout.pos.row,layout.pos.col
 ) {
@@ -751,7 +716,7 @@ polyline_grob <- function(
     vp_arg_names <- c('mask', 'clip', 'layout', 'layout.pos.row', 'layout.pos.col')
     vp_arg_names <- intersect(vp_arg_names, names(args))
     vp_args <- args[vp_arg_names]
-    vp <- do.call(ingrid::vp, vp_args)
+    vp <- do.call(vpc, vp_args)
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -759,11 +724,6 @@ polyline_grob <- function(
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   x <- make_unit(x, default.units)
   y <- make_unit(y, default.units)
-
-  if (isTRUE(centred)) {
-    x <- x + unit(0.5, 'npc')
-    y <- y + unit(0.5, 'npc')
-  }
 
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -803,24 +763,25 @@ polyline_grob <- function(
 #'        interpolate the image (the alternative is to use nearest-neighbour
 #'         interpolation, which gives a more blocky result). Default: FALSE
 #'
-#' @inheritParams bbox_grob
+#' @inheritParams ig_bbox
 #' @export
+#'
+#' @family grobs
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-raster_grob <- function(
+ig_raster <- function(
   image         = matrix(c(0, 1), 10, 10),
-  x             =  0,
-  y             =  0,
-  width         = 20,
-  height        = 20,
+  x             = 0.5,
+  y             = 0.5,
+  width         = 1,
+  height        = 1,
   just          = c('centre'),
   hjust         = NULL,
   vjust         = NULL,
   interpolate   = FALSE,
-  default.units = getOption("ingrid.default.units", 'mm'),
+  default.units = getOption("ingrid.default.units", 'npc'),
   name          = NULL,
   gp            = NULL,
   vp            = NULL,
-  centred       = TRUE,
   col, fill, alpha, lty, lwd, lex, lineend, linejoin, linemitre, fontsize, cex, fontfamily, fontface, lineheight,
   mask,clip,layout,layout.pos.row,layout.pos.col
 ) {
@@ -837,7 +798,7 @@ raster_grob <- function(
     vp_arg_names <- c('mask', 'clip', 'layout', 'layout.pos.row', 'layout.pos.col')
     vp_arg_names <- intersect(vp_arg_names, names(args))
     vp_args <- args[vp_arg_names]
-    vp <- do.call(ingrid::vp, vp_args)
+    vp <- do.call(vpc, vp_args)
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -847,11 +808,6 @@ raster_grob <- function(
   y      <- make_unit(y     , default.units)
   width  <- make_unit(width , default.units)
   height <- make_unit(height, default.units)
-
-  if (isTRUE(centred)) {
-    x <- x + unit(0.5, 'npc')
-    y <- y + unit(0.5, 'npc')
-  }
 
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -890,22 +846,21 @@ raster_grob <- function(
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#' @rdname bbox_grob
+#' @rdname ig_bbox
 #' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-rect_grob <- function(
-  x             =  0,
-  y             =  0,
-  width         = 20,
-  height        = 20,
+ig_rect <- function(
+  x             = 0.5,
+  y             = 0.5,
+  width         = 1,
+  height        = 1,
   just          = 'centre',
   hjust         = NULL,
   vjust         = NULL,
-  default.units = getOption("ingrid.default.units", 'mm'),
+  default.units = getOption("ingrid.default.units", 'npc'),
   name          = NULL,
   gp            = NULL,
   vp            = NULL,
-  centred       = TRUE,
   col, fill, alpha, lty, lwd, lex, lineend, linejoin, linemitre, fontsize, cex, fontfamily, fontface, lineheight,
   mask,clip,layout,layout.pos.row,layout.pos.col
 ) {
@@ -922,7 +877,7 @@ rect_grob <- function(
     vp_arg_names <- c('mask', 'clip', 'layout', 'layout.pos.row', 'layout.pos.col')
     vp_arg_names <- intersect(vp_arg_names, names(args))
     vp_args <- args[vp_arg_names]
-    vp <- do.call(ingrid::vp, vp_args)
+    vp <- do.call(vpc, vp_args)
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -932,11 +887,6 @@ rect_grob <- function(
   y      <- make_unit(y     , default.units)
   width  <- make_unit(width , default.units)
   height <- make_unit(height, default.units)
-
-  if (isTRUE(centred)) {
-    x <- x + unit(0.5, 'npc')
-    y <- y + unit(0.5, 'npc')
-  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Create the grob
@@ -972,20 +922,21 @@ rect_grob <- function(
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #' Create a grob
 #'
-#' @inheritParams bbox_grob
+#' @inheritParams ig_bbox
 #' @export
+#'
+#' @family grobs
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-roundrect_grob <- function(
-  x      =  0,
-  y      =  0,
-  width  = 20,
-  height = 20,
+ig_roundrect <- function(
+  x      = 0.5,
+  y      = 0.5,
+  width  = 1,
+  height = 1,
   just   = c('left', 'bottom'),
-  default.units = getOption("ingrid.default.units", 'mm'),
+  default.units = getOption("ingrid.default.units", 'npc'),
   name    = NULL,
   gp      = NULL,
   vp      = NULL,
-  centred = TRUE,
   col, fill, alpha, lty, lwd, lex, lineend, linejoin, linemitre, fontsize, cex, fontfamily, fontface, lineheight,
   mask,clip,layout,layout.pos.row,layout.pos.col
 ) {
@@ -1002,7 +953,7 @@ roundrect_grob <- function(
     vp_arg_names <- c('mask', 'clip', 'layout', 'layout.pos.row', 'layout.pos.col')
     vp_arg_names <- intersect(vp_arg_names, names(args))
     vp_args <- args[vp_arg_names]
-    vp <- do.call(ingrid::vp, vp_args)
+    vp <- do.call(vpc, vp_args)
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1012,11 +963,6 @@ roundrect_grob <- function(
   y      <- make_unit(y     , default.units)
   width  <- make_unit(width , default.units)
   height <- make_unit(height, default.units)
-
-  if (isTRUE(centred)) {
-    x <- x + unit(0.5, 'npc')
-    y <- y + unit(0.5, 'npc')
-  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Create the grob
@@ -1053,21 +999,22 @@ roundrect_grob <- function(
 #' @param x0,y0,x1,y1 Neveric vectors indicating the start and end of the
 #'        segments
 #'
-#' @inheritParams bbox_grob
-#' @inheritParams bezier_grob
+#' @inheritParams ig_bbox
+#' @inheritParams ig_bezier
 #' @export
+#'
+#' @family grobs
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-segments_grob <- function(
+ig_segments <- function(
   x0     =  0,
   y0     =  0,
-  x1     = 20,
-  y1     = 20,
-  default.units = getOption("ingrid.default.units", 'mm'),
+  x1     =  1,
+  y1     =  1,
+  default.units = getOption("ingrid.default.units", 'npc'),
   arrow   = NULL,
   name    = NULL,
   gp      = NULL,
   vp      = NULL,
-  centred = TRUE,
   col, fill, alpha, lty, lwd, lex, lineend, linejoin, linemitre, fontsize, cex, fontfamily, fontface, lineheight,
   mask,clip,layout,layout.pos.row,layout.pos.col
 ) {
@@ -1084,7 +1031,7 @@ segments_grob <- function(
     vp_arg_names <- c('mask', 'clip', 'layout', 'layout.pos.row', 'layout.pos.col')
     vp_arg_names <- intersect(vp_arg_names, names(args))
     vp_args <- args[vp_arg_names]
-    vp <- do.call(ingrid::vp, vp_args)
+    vp <- do.call(vpc, vp_args)
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1092,12 +1039,6 @@ segments_grob <- function(
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   x <- make_unit(x, default.units)
   y <- make_unit(y, default.units)
-
-  if (isTRUE(centred)) {
-    x <- x + unit(0.5, 'npc')
-    y <- y + unit(0.5, 'npc')
-  }
-
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Create the grob
@@ -1137,23 +1078,24 @@ segments_grob <- function(
 #' @param label A character or expression vector. Other objects are
 #'        coerced by as.graphicsAnnot.
 #'
-#' @inheritParams bbox_grob
+#' @inheritParams ig_bbox
 #' @export
+#'
+#' @family grobs
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-text_grob <- function(
+ig_text <- function(
   label         = "Hello #RStats",
-  x             =  0,
-  y             =  0,
+  x             =  0.5,
+  y             =  0.5,
   just          = c('left', 'bottom'),
   hjust         = NULL,
   vjust         = NULL,
   rot           = 0,
   check.overlap = FALSE,
-  default.units = getOption("ingrid.default.units", 'mm'),
+  default.units = getOption("ingrid.default.units", 'npc'),
   name          = NULL,
   gp            = NULL,
   vp            = NULL,
-  centred       = TRUE,
   col, fill, alpha, lty, lwd, lex, lineend, linejoin, linemitre, fontsize, cex, fontfamily, fontface, lineheight,
   mask,clip,layout,layout.pos.row,layout.pos.col
 ) {
@@ -1170,7 +1112,7 @@ text_grob <- function(
     vp_arg_names <- c('mask', 'clip', 'layout', 'layout.pos.row', 'layout.pos.col')
     vp_arg_names <- intersect(vp_arg_names, names(args))
     vp_args <- args[vp_arg_names]
-    vp <- do.call(ingrid::vp, vp_args)
+    vp <- do.call(vpc, vp_args)
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1178,12 +1120,6 @@ text_grob <- function(
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   x <- make_unit(x, default.units)
   y <- make_unit(y, default.units)
-
-  if (isTRUE(centred)) {
-    x <- x + unit(0.5, 'npc')
-    y <- y + unit(0.5, 'npc')
-  }
-
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Create the grob

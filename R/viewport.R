@@ -8,9 +8,8 @@
 #' @param ... other arguments ignored
 #'
 #' @import grid
-#' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-vp <- function(
+vpc <- function(
   x              = unit(0.5, "npc"),
   y              = unit(0.5, "npc"),
   width          = unit(1, "npc"),
@@ -87,9 +86,9 @@ create_mask <- function (mask) {
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#' Set a mask on an existing viewport
+#' Set a mask on an existing viewport or grob
 #'
-#' @param vp viewport
+#' @param x viewport or grob with a viewport
 #' @param mask One of "none" (or FALSE) or "inherit" (or TRUE) or a grob
 #'        (or a gTree). This specifies that the viewport should have no mask,
 #'        or it should inherit the mask of its parent, or it should have its
@@ -98,7 +97,7 @@ create_mask <- function (mask) {
 #' @import grid
 #' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-vp_setmask <- function(vp, mask) {
+igc_mask <- function(x, mask) {
   if (!is.logical(mask)) {
     if (is.grob(mask)) {
       mask <- create_mask(mask)
@@ -113,9 +112,19 @@ vp_setmask <- function(vp, mask) {
     }
   }
 
-  vp$mask <- mask
+  if (is_grob(x)) {
+    if (is.null(x$vp)) {
+      x$vp <- vpc()
+    }
+    x$vp$mask <- mask
+  } else if (is_viewport(x)) {
+    x$mask <- mask
+  } else {
+    stop("'x' must be a viewport or grob")
+  }
 
-  vp
+
+  x
 }
 
 
@@ -157,7 +166,7 @@ create_clippath <- function(clip) {
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #' Set a clip on an existing viewport
 #'
-#' @param vp viewport
+#' @param x viewport or grob with a viewport
 #' @param clip One of "on", "inherit", or "off", indicating whether to clip
 #'  to the extent of this viewport, inherit the clipping region from the
 #'  parent viewport, or turn clipping off altogether. For back-compatibility,
@@ -167,7 +176,7 @@ create_clippath <- function(clip) {
 #' @import grid
 #' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-vp_setclip <- function(vp, clip) {
+igc_clip <- function(x, clip) {
   if (!is.logical(clip)) {
     if (is.grob(clip)) {
       clip <- create_clippath(clip)
@@ -182,55 +191,21 @@ vp_setclip <- function(vp, clip) {
       )
     }
   }
-}
 
 
-
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#' Rotate a viewport
-#'
-#' @param vp viewport
-#' @param angle rotation angle in degrees
-#'
-#' @import grid
-#' @export
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-vp_rotate <- function(vp, angle) {
-
-  if (is.null(vp)) {
-    vp <- grid::viewport(angle = angle)
+  if (is_grob(x)) {
+    if (is.null(x$vp)) {
+      x$vp <- vpc()
+    }
+    x$vp$clip <- clip
+  } else if (is_viewport(x)) {
+    x$clip <- clip
   } else {
-    vp$angle <- vp$angle + angle
+    stop("'x' must be a viewport or grob")
   }
 
-  vp
+
+  x
 }
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#' Translate a viewport
-#'
-#' @param vp viewport
-#' @param x,y translation
-#' @param default.units 'npc'
-#'
-#' @import grid
-#' @export
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-vp_translate <- function(vp, x, y, default.units = 'npc') {
-
-  x <- make_unit(x, default.units)
-  y <- make_unit(y, default.units)
-
-  if (is.null(vp)) {
-    vp <- grid::viewport()
-  }
-
-  vp$x <- vp$x + x
-  vp$y <- vp$y + y
-
-  vp
-}
-
 
 

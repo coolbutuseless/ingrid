@@ -26,9 +26,9 @@ knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
 
 # combining grobs
 
-* `grob_stack()`
+* `igc_stack()`
     * simple combination of multiple grobs
-* `grob_intersect()`
+* `igc_intersect()`
     * keep only where two grobs overlap
 * `grob_minus()`
     * subtract a grob from anotehr
@@ -50,22 +50,22 @@ register_verbose_printing()
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create 4 circles
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-c1 <- circle_grob(r = 20, fill = 'red', alpha = 0.3)
+c1 <- ig_circle(r = .mm(20), fill = 'red', alpha = 0.3)
 grid.newpage(); grid.draw(c1);
 
-c2 <- circle_grob(r = 33, x = 25, fill = 'blue', alpha = 0.3)
+c2 <- ig_circle(r = .mm(33), x = .mid + .mm(25), fill = 'blue', alpha = 0.3)
 grid.newpage(); grid.draw(c2);
 
-c3 <- circle_grob(r = 28, x = -19, y = -20, fill = 'lightblue', col = 'transparent', alpha = 0.3)
+c3 <- ig_circle(r = .mm(28), x = .mid  - .mm(19), y = .mid - .mm(20), fill = 'lightblue', col = 'transparent', alpha = 0.3)
 grid.newpage(); grid.draw(c3);
 
-c4 <- circle_grob(r = 2, x = -13, y= 4, fill='black', col='white')
+c4 <- ig_circle(r = .mm(2), x = .mid - .mm(13), y = .mid + .mm(4), fill='black', col='white')
 grid.newpage(); grid.draw(c4);
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Stack some of the circles
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-i1 <- grob_stack(c1, c2, c4)
+i1 <- igc_stack(c1, c2, c4)
 grid.newpage(); grid.draw(i1);
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -78,7 +78,7 @@ grid.draw(c3)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Keep just the intersection of the stack of 3 circls and the 4th circle
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-wug <- ingrid::grob_intersect(i1, c3)
+wug <- ingrid::igc_intersect(i1, c3)
 
 grid.newpage(); grid.draw(wug);
 ```

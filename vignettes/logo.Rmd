@@ -45,13 +45,13 @@ library(ingrid)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 r     <- 100
 theta <- seq(30, 360, 60) * pi/180 
-x     <- r * cos(theta)
-y     <- r * sin(theta)
+x     <- .mid + .mm(r * cos(theta))
+y     <- .mid + .mm(r * sin(theta))
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # a hex polygon
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-hex <- polygon_grob(x, y, fill = 'black')
+hex <- ig_polygon(x, y, fill = 'black')
 
 grid.newpage()
 grid.draw(hex)
@@ -64,10 +64,10 @@ grid.draw(hex)
 # Create an image maskeed by the hex
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 jpg <- jpeg::readJPEG("./img/ingrid.jpg")
-image <- raster_grob(
+image <- ig_raster(
   image  = jpg, 
-  x      = .mm(-5),
-  y      = .mm(-25),
+  x      = .mid - .mm( 5),
+  y      = .mid - .mm(25),
   width  = .mm(2 * 1.0 * r), 
   height = .mm(3 * 1.0 * r)
 )
@@ -79,7 +79,7 @@ grid.draw(image)
 ## Mask the image with the hexagon
 
 ```{r}
-image$vp <- vp_setmask(image$vp, hex)
+image <- igc_mask(image, hex)
 
 grid.newpage()
 grid.draw(image)
@@ -92,10 +92,10 @@ grid.draw(image)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Position text
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-text <- text_grob(
+text <- ig_text(
   label      = 'ingrid',
-  x          =  0.25 * r,
-  y          = -0.75 * r, 
+  x          = .mid + .mm(0.25 * r),
+  y          = .mid - .mm(0.75 * r), 
   rot        = 30,
   just       = 0,
   col        = 'white', 

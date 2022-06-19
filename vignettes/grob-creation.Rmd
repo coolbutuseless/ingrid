@@ -49,20 +49,18 @@ grid.draw(cg)
 
 grob creation in `{ingrid}` offers:
 
-* unit shortcuts e.g. `.npc()` is equivalent to `unit(x, 'npg')`
+* unit shortcuts e.g. `.npc()` is equivalent to `unit(x, 'npc')`
 * graphical parameters may be specified inline with the arguments for the grob 
   itself, rather than being a separate `gpar()` call
-* Be default, all grob coordinates are offset from the centre of the canvas
 
 ```{r}
-cg <- ingrid::circle_grob(
+cg <- ingrid::ig_circle(
   x    = .npc(0.4), 
   y    = .npc(0.3), 
-  r    = 5, 
+  r    = .mm(5), 
   fill = 'red', 
   col  = 'blue', 
-  lwd  = 12,
-  centred = FALSE
+  lwd  = 12
 )
 
 ingrid::register_verbose_printing()
@@ -74,6 +72,6 @@ grid.draw(cg)
 
 # See also
 
-`rect_grob()`, `polygon_grob()`, `lines_grob()` etc
+`ig_rect()`, `ig_polygon()`, `ig_lines()` etc
 
 

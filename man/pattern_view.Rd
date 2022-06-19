@@ -13,7 +13,7 @@ pattern_view(pat, height = .mm(50), width = .mm(50 * 1.618), clear = TRUE, ...)
 
 \item{clear}{should the page be clared before drawing pattern? default: TRUE}
 
-\item{...}{other arguments passed to \code{rect_grob}}
+\item{...}{other arguments passed to \code{ig_rect}}
 }
 \description{
 view a pattern

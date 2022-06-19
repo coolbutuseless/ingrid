@@ -6,7 +6,7 @@
 #' @param grob grob
 #' @param x,y default 0,0
 #' @param width,height default: 20,20
-#' @param default.units getOption("ingrid.default.units", 'mm')
+#' @param default.units getOption("ingrid.default.units", 'npc')
 #' @param just justification. default: centre
 #' @param hjust,vjust other justification parameters
 #' @param extend default: 'repeat'
@@ -16,13 +16,13 @@
 #' @import grid
 #' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-pattern_create <- function(
+ig_pattern <- function(
   grob,
-  x      = 0,
-  y      = 0,
-  width  = 20,
-  height = 20,
-  default.units = getOption("ingrid.default.units", 'mm'),
+  x      = 0.5,
+  y      = 0.5,
+  width  = 1,
+  height = 1,
+  default.units = getOption("ingrid.default.units", 'npc'),
   just    = 'centre',
   hjust   = NULL,
   vjust   = NULL,
@@ -35,12 +35,6 @@ pattern_create <- function(
   y      <- make_unit(y     , default.units)
   width  <- make_unit(width , default.units)
   height <- make_unit(height, default.units)
-
-  if (isTRUE(centred)) {
-    x <- x + unit(0.5, 'npc')
-    y <- y + unit(0.5, 'npc')
-  }
-
 
   grid::pattern(
     grob          = grob,
@@ -65,14 +59,14 @@ pattern_create <- function(
 #' @param pat pattern object
 #' @param width,height dimenaions of rectangle holding pattern
 #' @param clear should the page be clared before drawing pattern? default: TRUE
-#' @param ... other arguments passed to \code{rect_grob}
+#' @param ... other arguments passed to \code{ig_rect}
 #'
 #' @import grid
 #' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 pattern_view <- function(pat, height = .mm(50), width = .mm(50 * 1.618), clear = TRUE, ...) {
 
-  big <- rect_grob(width = width, height = height, ...)
+  big <- ig_rect(width = width, height = height, ...)
   big$gp$fill <- pat
 
   if (isTRUE(clear)) {

@@ -6,24 +6,25 @@
 <!-- badges: start -->
 
 ![](https://img.shields.io/badge/cool-useless-green.svg)
+[![R-CMD-check](https://github.com/coolbutuseless/ingrid/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/coolbutuseless/ingrid/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 `ingrid` provides some tools that I find useful for
-creating/manipulating `grid`/`grob` objects interactively in the
-console.
-
-The name `ingrid` stands for **IN**teractive **GRID**
+creating/manipulating `grid`/`grob`.
 
 The key benefits I get from `ingrid`:
 
--   verbose output of grobs, gTrees and polyclipgrobs, with much more
-    output than their default `print` methods from `{grid}`
--   a suite of grob creation functions with inline gpar parameter
-    specification.
--   `default.units` can be set globally to whatever the user wants, but
-    default to ‘mm’
--   a consistent set of grob combination functions (e.g. intersection,
-    minus) that work across single grobs, gTrees and polyclipgrobs
+-   **nested layout** `row` and `col` - similar to shiny UI definition
+-   **consistent interface to grob combination functions**
+    (intersection, union etc) which work across `grobs`, `gTrees` and
+    `polyclipgrobs`
+-   **verbose `print`** methods for grobs
+-   **inline graphical parameter specification**
+-   **Global, user-configurable `default.units`**
+
+# Todo
+
+-   igt translate and rotate could work on both grobs and viewports?
 
 ## Vignettes
 
@@ -38,28 +39,27 @@ The key benefits I get from `ingrid`:
 -   [Creating
     patterns](https://coolbutuseless.github.io/package/ingrid/articles/pattern.html)
 
-## What’s in the box (Details, details, details)
+## What’s in the box
 
-|                         | grid                             | ingrid                                                                                                              |
-|-------------------------|----------------------------------|---------------------------------------------------------------------------------------------------------------------|
-| grob creation           | circleGrob(), rectGrob(), etc    | circle\_grob(), rect\_grob(), etc                                                                                   |
-| default.units           | ‘npc’                            | getOption(‘ingrid.default.units’, ‘mm’)                                                                             |
-| unit creation           | unit(10, ‘mm’)                   | .mm(10), .npc(), .points() etc                                                                                      |
-| gpar creation           | gpar(fill = ‘red’)               | gp(fill = ‘red’) Has named arguments to support autocompletion.                                                     |
-| pattern creation        | pattern() default extend = ‘pad’ | pattern\_creation() default extend = ‘repeat’                                                                       |
-| grob combination        | gridGeometry::polyclipgrob()     | grob\_stack(), grob\_intersect(), grob\_union(), grob\_minus(), grob\_xor() supporting grobs, gTrees, polyclipgrobs |
-| print()                 | print.grob() is terse            | verbose printing print.grob(), print.gTree(), print.polyclipgrob()                                                  |
-| enable verbose printing |                                  | register\_verbose\_printing(), deregister\_verbose\_printing()                                                      |
-| grob coord transforms   |                                  | grob\_translate(), grob\_rotate()                                                                                   |
-| viewport updates        |                                  | vp\_translate(), vp\_rotate(), vp\_setmask(), vp\_setclip()                                                         |
-|                         |                                  |                                                                                                                     |
+-   **`ig_*()`** grob creation functions with inline `gpar`
+    specification
+    -   e.g. `ig_circle(r = .mm(10), fill = 'blue')`
+-   **`igc_*()`** grob **combination** operators
+    -   `igc_stack()`, `igc_intersect()`, `igc_union()`, `igc_minus()`,
+        `igc_xor()`
+    -   `igc_clip()`, `igc_mask()`
+-   **`igl_*()`** **layout** for multiple grobs
+    -   `igl_row()`, `igl_col()`, `igl_vp()`
+-   **`igt_*()`** **transform** operations on grobs
+    -   `igt_translate()`, `igt_rotate()`
+    -   `igt_update()` to update *any* parameter in the grob or viewport
 
 <details>
 <summary>
 Click here to reveal more details on what’s included
 </summary>
 
--   `grob_circle()` etc. Analoges for the the grob creation functions in
+-   `ig_circle()` etc. Analoges for the the grob creation functions in
     the `grid` package, but with a slight change in the argument
     defaults:
     -   default.units are now ‘mm’ instead of ‘npc’
@@ -67,26 +67,23 @@ Click here to reveal more details on what’s included
         structures, and no longer left as `NULL` if no values are given.
         This makes manipulation of grob objects a bit easier after
         they’ve been created.
-    -   location coordinates (e.g. x, y) are offset from the centre of
-        the viewport by default. Set `centred = FALSE` to disable this
-        behaviour.
 -   Set of functions for combining vanilla grobs, polyclipgrobs and
     gTree objects. These functions are mostly extensions of
     `gridGeometry::polyclipgrob()` which extends the operations to
     recurse into gTree and polyclipgrob structures to affect all child
     objects:
-    -   `grob_stack()` for simple combination of shapes
-    -   `grob_intersect()` for shape intersection
-    -   `grob_union()` for shape union
-    -   `grob_minus()` for shape subtraction
-    -   `grob_xor()` for shape combination thruogh use of ‘exclusive or’
+    -   `igc_stack()` for simple combination of shapes
+    -   `igc_intersect()` for shape intersection
+    -   `igc_union()` for shape union
+    -   `igc_minus()` for shape subtraction
+    -   `igc_xor()` for shape combination thruogh use of ‘exclusive or’
 -   Functions for creating units quickly e.g `.mm(x)` instead of
     `units(x, 'mm')`
 -   Verbose printing of vanilla grob, gTree and polyclipgrob objects
 -   Structured printing of the grid pattern objects available in R4.1.0
 -   Simple grob coordinate transformations:
-    -   `grob_translate()`
-    -   `grob_rotate()`
+    -   `igt_translate()`
+    -   `igt_rotate()`
 -   Simple viewport transformations:
     -   `vp_translate()`
     -   `vp_rotate()`
@@ -95,7 +92,7 @@ Click here to reveal more details on what’s included
 -   Some helpers for patterns:
     -   S3 `print` methods with more structured output than `grid`’s
         default
-    -   `pattern_create()` is a wrapper around `grid::pattern()` where:
+    -   `ig_pattern()` is a wrapper around `grid::pattern()` where:
         -   `extend = 'repeat'` is the default (instead of ‘pad’)
         -   `default.units` are in ‘mm’ (instead of ‘npc’)
         -   location coordinates (x, y) are offset from the centre of
@@ -114,198 +111,178 @@ with:
 remotes::install_github('coolbutuseless/ingrid')
 ```
 
-## Example - verbose grob output
+# Nested object specification
 
-In the code below, `circle` is created with `{grid}` and `circle2` is
-created with `{ingrid}`.
+`{ingrid}` reframes the grid layout functions into **nested
+hierarchical** layout functions, somewhat similar to how `{shiny}` does
+it’s UI layout.
 
-There aren’t any major differences in how this creation works, but look
-for:
-
--   default units for `ingrid::circle_grob` are ‘mm’
--   `gpar` parameters are given inline with the grob call (although it
-    is also possible to pass in a `gp` argument)
--   by calling `ingrid::register_verbose_printing()` the output for
-    `circle2` gives much more detail than the default printing.
+-   `igl_row()` will arrange its sub-elements in a horizontal row.
+-   `igl_col()` will arrange its sub-elements in a vertical column.
+-   `igl_vp()` will create an arbitrary viewport containing its
+    sub-elements.
 
 ``` r
-library(grid)
-library(ingrid)
+check <- igl_row(
+  igl_col(
+    ig_rect(fill = 'black'),
+    nullGrob()
+  ),
+  igl_col(
+    nullGrob(),
+    ig_rect(fill = 'black')
+  )
+)
+
+grid.newpage(); grid.draw(check)
 ```
 
-#### Creating a blue circle in `{grid}`
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="200" height="200" />
 
 ``` r
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Using 'grid'
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-circle1 <- circleGrob(r = unit(20, 'mm'), gp = gpar(fill = 'lightblue'))
-circle1
+check45 <- igl_vp(check, angle = 45)
+grid.newpage(); grid.draw(check45)
 ```
 
-    #> circle[GRID.circle.1]
+<img src="man/figures/README-unnamed-chunk-3-2.png" width="200" height="200" />
 
 ``` r
-grid.newpage()
-grid.draw(circle1)
-```
+demo <- igl_row(
+  ig_rect  (fill = ig_pattern(check  , width = .cm(1.5), height = .cm(1.5))),
+  ig_circle(fill = ig_pattern(check  , width = .cm(2.5), height = .cm(2.5))),
+  ig_rect  (fill = ig_pattern(check45, width = .cm(3  ), height = .cm(3  )))
+)
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
-
-#### Creating a blue circle in `{ingrid}`
-
-``` r
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Using 'ingrid' where default units are 'mm'
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-circle2 <- circle_grob(20, fill = 'lightblue')
-circle2
-```
-
-    #> circle[GRID.circle.2]
-
-``` r
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Enable verbose printing of grobs 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-ingrid::register_verbose_printing()
-circle2
-```
-
-    #> circle [GRID.circle.2]
-    #>   x=c(sum(0mm, 0.5npc)), y=c(sum(0mm, 0.5npc)), r=c(20mm)
-    #>   gp: 
-    #>     fill: lightblue
-    #>   vp: [GRID.VP.1] default
-
-``` r
-grid.newpage()
-grid.draw(circle2)
+grid::grid.newpage(); grid::grid.draw(demo)
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
-# Creating and combining grobs
+# Combining grobs
+
+Grobs may be combined with `igc_*()` functions.
+
+-   `igc_stack()` combines multiple grobs (as a `grobTree()`
+-   `igc_intersetion()`, `igc_union()`, `igc_xor()` and `igc_minus()`
+    are general set operations on grobs using
+    `gridGeometry::polyclipGrob()`
+-   `igc_combine()` is the core function used by the above set operators
+-   `igc_mask()` and `igc_clip()` use the new arbitrary clip and mask
+    functionality introduced in R4.1
 
 ``` r
 library(grid)
 library(ingrid)
-register_verbose_printing()
 
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Create 4 circles
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-c1 <- circle_grob(r = 20, fill = 'red', alpha = 0.3)
-grid.newpage(); grid.draw(c1);
+wug <- igc_intersect(
+  igc_stack(
+    ig_circle(r = .mm(20), fill = 'red', alpha = 0.3),
+    ig_circle(r = .mm(33), x = .mid + .mm(25), fill = 'blue', alpha = 0.3),
+    ig_circle(r = .mm( 2), x = .mid - .mm(13), y = .mid + .mm(4), fill='black', col='white')
+  ),
+  ig_circle(r = .mm(28), x = .mid - .mm(19), y = .mid - .mm(20), fill = 'lightblue', col = 'transparent', alpha = 0.3)
+)
+grid.newpage(); grid.draw(wug)
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
 
-``` r
-c2 <- circle_grob(r = 33, x = 25, fill = 'blue', alpha = 0.3)
-grid.newpage(); grid.draw(c2);
-```
+# Masking
 
-<img src="man/figures/README-unnamed-chunk-5-2.png" width="100%" />
-
-``` r
-c3 <- circle_grob(r = 28, x = -19, y = -20, fill = 'lightblue', col = 'transparent', alpha = 0.3)
-grid.newpage(); grid.draw(c3);
-```
-
-<img src="man/figures/README-unnamed-chunk-5-3.png" width="100%" />
-
-``` r
-c4 <- circle_grob(r = 2, x = -13, y= 4, fill='black', col='white')
-grid.newpage(); grid.draw(c4);
-```
-
-<img src="man/figures/README-unnamed-chunk-5-4.png" width="100%" />
-
-``` r
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Stack some of the circles
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-i1 <- grob_stack(c1, c2, c4)
-grid.newpage(); grid.draw(i1);
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Visualise how the 4th circle overlaps
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-grid.newpage();
-grid.draw(i1)
-grid.draw(c3)
-```
-
-<img src="man/figures/README-unnamed-chunk-5-5.png" width="100%" />
-
-``` r
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Keep just the intersection of the stack of 3 circls and the 4th circle
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-wug <- ingrid::grob_intersect(i1, c3)
-grid.newpage(); grid.draw(wug);
-```
-
-<img src="man/figures/README-unnamed-chunk-5-6.png" width="100%" />
-
-## logo for `ingrid`
+`igc_mask()` and `igc_clip()` use the new arbitrary clip and mask
+functionality introduced in R4.1
 
 ``` r
 library(grid)
 library(ingrid)
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Parameters for a hex
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-r     <- 100
+# Hex
+r     <- .mm(20)
 theta <- seq(30, 360, 60) * pi/180 
-x     <- r * cos(theta)
-y     <- r * sin(theta)
+x     <- .mid + .mm(r * cos(theta))
+y     <- .mid + .mm(r * sin(theta))
+hex   <- ig_polygon(x, y, fill = 'blue')
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# a hex polygon
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-hex <- polygon_grob(x, y, fill = 'black')
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Create an image maskeed by the hex
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-jpg <- jpeg::readJPEG("./man/figures/ingrid.jpg")
-image <- raster_grob(
-  image  = jpg, 
-  x      = .mm(-5),
-  y      = .mm(-25),
-  width  = .mm(2 * 1.0 * r), 
-  height = .mm(3 * 1.0 * r),
-  mask   = hex
+# Random raster
+ras <- ig_raster(
+  image = matrix(runif(100), 10, 10)
 )
 
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Position text
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-text <- text_grob(
-  label      = 'ingrid',
-  x          =  0.25 * r,
-  y          = -0.75 * r, 
-  rot        = 30,
-  just       = 0,
-  col        = 'white', 
-  fontfamily = 'courier',
-  cex        = 4
-)
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Draw the objects
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-grid::grid.newpage()
-grid::grid.draw(image)
-grid::grid.draw(text)
+# Draw individually
+grid.newpage()
+grid.draw(ras)
+grid.draw(hex)
 ```
 
-<img src="man/figures/logo.png" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="200" height="200" />
+
+``` r
+# Mask the raster with the hex
+masked <- igc_mask(ras, hex)
+grid.newpage(); grid.draw(masked)
+```
+
+<img src="man/figures/README-unnamed-chunk-6-2.png" width="200" height="200" />
+
+## Transform grobs by translation/rotation
+
+``` r
+# Template object that will be adapted
+rect <- ig_rect(width = .cm(2), height = .cm(2), col = 'grey20')
+
+# create grobs
+N <- 160
+color <- rainbow(N)
+grobs <- lapply(seq(N), function(i) {
+  igt_translate(
+    x = -.mid + .mm(3 * i),
+    y = .inch(sin(i/4)),
+    igt_rotate(
+      angle = i * 2,
+      igt_update(rect, fill = color[i])
+    )
+  )
+})
+
+# draw
+grobs <- do.call(grid::grobTree, grobs)
+grid.newpage(); grid.draw(grobs)
+```
+
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="800" height="300" />
+
+``` r
+# Template object that will be adapted
+rect <- ig_rect(width = .cm(1), height = .cm(1), col = 'white')
+
+
+N     <- 160
+color <- rainbow(N)
+
+# Coords
+r     <- .mm(40)
+theta <- (seq(0, 360, length.out = N + 1) * pi/180 )[-1]
+x     <- .mm(r * cos(theta + 0.2) + r * sin(3 * theta))
+y     <- .mm(r * 0.8 * cos(2 * theta) + r * sin(theta))
+
+# create grobs
+grobs <- lapply(seq(N), function(i) {
+  igt_translate(
+    x = x[i],
+    y = y[i],
+    igt_rotate(
+      angle = i * 5,
+      igt_update(rect, fill = color[i])
+    )
+  )
+})
+
+# draw
+grobs <- do.call(grid::grobTree, grobs)
+grid.newpage(); grid.draw(grobs)
+```
+
+<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
 
 # Future
 

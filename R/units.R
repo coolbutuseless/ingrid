@@ -26,8 +26,19 @@
 
 #' @rdname dotmm
 #' @export
-.points <- function(x) { grid::unit(x, 'points') }
+.points <- function(x) { grid::unit(x, 'points') } # avoid name clash with ggplot2
 
 #' @rdname dotmm
 #' @export
 .snpc <- function(x) { grid::unit(x, 'snpc') }
+
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#' Shortcut value for `unit(0.5, 'npc')`
+#'
+#' @import grid
+#' @export
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.mid <- grid::unit(0.5, 'npc')
